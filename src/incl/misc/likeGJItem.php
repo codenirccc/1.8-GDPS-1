@@ -12,14 +12,10 @@ if(!isset($_POST['itemID']))
 $type = isset($_POST['type']) ? $_POST['type'] : 1;
 $itemID = ExploitPatch::remove($_POST['itemID']);
 $isLike = isset($_POST['like']) ? $_POST['like'] : 1;
-
-// Require a verified account to like/dislike. This ties every like to a real
-// account so bots cannot spam likes/dislikes by rotating IPs.
 $accountID = GJPCheck::getAccountIDOrDie();
 if(!is_numeric($accountID))
 	exit("-1");
 
-// Each account may only like/dislike a given item once (per type).
 $query = $db->prepare("SELECT count(*) FROM actions_likes WHERE itemID=:itemID AND type=:type AND accountID=:accountID");
 $query->execute([':type' => $type, ':itemID' => $itemID, ':accountID' => $accountID]);
 if($query->fetchColumn() > 0)
